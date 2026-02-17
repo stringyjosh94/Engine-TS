@@ -68,7 +68,10 @@
             margin-bottom: 10px;
         }
 
-        #controls > a, #controls select, #controls optgroup, #controls optgroup > option {
+        #controls > a,
+        #controls select,
+        #controls optgroup,
+        #controls optgroup > option {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 12px;
         }
@@ -96,19 +99,167 @@
     </style>
 
     <script>
-        /* Your existing scripts remain 100% unchanged */
-        function isTouchDevice() { return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); }
-        function isMobile() { if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|Mobile/i.test(navigator.userAgent)) return true; return isTouchDevice(); }
-        function toggleFullscreen() { /* unchanged */ ... }
-        function saveScreenshot() { /* unchanged */ ... }
-        function hideControls() { /* unchanged */ ... }
-        function hideMessage() { /* unchanged */ ... }
-        function showControls() { /* unchanged */ ... }
-        document.addEventListener('keydown', function(e){ /* unchanged */ ... });
-        function loadSettings() { /* unchanged */ ... }
-        function setKeyboardChoice(ev){ /* unchanged */ ... }
-        function setSize(size){ /* unchanged */ ... }
-        function setFilter(type){ /* unchanged */ ... }
+        // ================= ORIGINAL CLIENT SCRIPTS =================
+        function isTouchDevice() {
+            return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+        }
+
+        function isMobile() {
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|Mobile/i.test(navigator.userAgent)) {
+                return true;
+            }
+
+            return isTouchDevice();
+        }
+
+        function toggleFullscreen() {
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            } else {
+                let element = document.getElementById('canvas');
+
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
+                }
+            }
+        }
+
+        function saveScreenshot() {
+            document.getElementById('screenshot').download = 'screenshot-' + Math.floor(Date.now() / 1000) + '.png';
+            document.getElementById('screenshot').href = document.getElementById('canvas').toDataURL('image/png').replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+        }
+
+        function hideControls() {
+            document.getElementById('controls').style.display = 'none';
+            document.getElementById('hide-message').style.display = '';
+
+            countDown = 0;
+            hideMessage();
+
+            localStorage.setItem('hideControls', true);
+        }
+
+        let timer;
+        let countDown = 0;
+        let countDownMax = 10;
+        function hideMessage() {
+            if (countDown >= countDownMax) {
+                document.getElementById('hide-message').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('count-down').textContent = (countDownMax - countDown) + 's';
+
+            countDown++;
+            timer = setTimeout(hideMessage, 1000);
+        }
+
+        function showControls() {
+            clearTimeout(timer);
+
+            document.getElementById('controls').style.display = '';
+            document.getElementById('hide-message').style.display = 'none';
+
+            localStorage.removeItem('hideControls');
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.altKey) {
+                if (e.code === 'KeyI') {
+                    e.preventDefault();
+                    showControls();
+                }
+            }
+        });
+
+        function loadSettings() {
+            setFilter((localStorage.getItem('filtering') == 'true') ? 'pixelated' : 'auto');
+            if (isMobile()) {
+                const keyboardChoiceContainerElement = document.getElementById('mobilekeyboard-container');
+                const keyboardChoiceElement = document.getElementById('mobilekeyboard');
+                keyboardChoiceContainerElement.style.display = 'inline-block';
+                let mobilekeyboard = localStorage.getItem('mobileKeyboardMode');
+                if (mobilekeyboard === 'canvas') {
+                    keyboardChoiceElement.value = 'canvas';
+                } else if (mobilekeyboard === 'native') {
+                    keyboardChoiceElement.value = 'native';
+                } else {
+                    // Unset choice = hybrid
+                    keyboardChoiceElement.value = 'hybrid';
+                }
+            } else {
+                let size = localStorage.getItem('canvasSize');
+                if (size) {
+                    setSize(size);
+                }
+
+                let controls = localStorage.getItem('hideControls');
+                if (controls === 'true') {
+                    hideControls();
+                }
+            }
+        }
+
+        function setKeyboardChoice(ev) {
+            const target = document.getElementById('mobilekeyboard').value;
+            localStorage.setItem('mobileKeyboardMode', target);
+            alert('Please reload the page to apply the changes.');
+        }
+
+        function setSize(size) {
+            let canvas = document.getElementById('canvas');
+            if (size == null) {
+                size = document.getElementById('size').value;
+            }
+            switch (size) {
+                default:
+                case '1':
+                case '2':
+                case '3':
+                    canvas.style.width = (765 * parseInt(size)) + 'px';
+                    canvas.style.height = (503 * parseInt(size)) + 'px';
+                    canvas.style.maxWidth = 'none';
+                    break;
+                case 'auto':
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                    break;
+            }
+            document.getElementById('size').value = size;
+            localStorage.setItem('canvasSize', size);
+        }
+
+        function setFilter(type) {
+            let canvas = document.getElementById('canvas');
+            let filterSelect = 'auto';
+            switch (type) {
+                default:
+                case 'dropdown':
+                    filterSelect = document.getElementById('filtering').value;
+                    localStorage.setItem('filtering', filterSelect == 'auto' ? false : true);
+                    break;
+                case 'pixelated':
+                case 'auto':
+                    filterSelect = type;
+                    document.getElementById('filtering').value = type;
+                    break;
+            }
+            canvas.style.imageRendering = filterSelect;
+        }
     </script>
 </head>
 
@@ -117,38 +268,34 @@
 
         <!-- ================= HEADER / BANNER / NAVBAR ================= -->
         <div id="header" style="width:765px; margin-bottom:5px;">
-
-            <!-- Top Banner -->
             <div style="text-align:center;">
-                <img src="" width="742" height="90" alt="Banner">
+                <img id="banner-img" alt="Banner">
             </div>
 
-            <!-- Navbar -->
-            <div style="width:765px; height:25px; background:url('navbar.gif');">
+            <div style="width:765px; height:25px;" id="navbar-container">
                 <table border="0" cellspacing="0" cellpadding="0" width="765" height="25">
                     <tr>
                         <td width="5"></td>
-                        <td><img src="navbar_singleplayer.gif" alt="Singleplayer"></td>
+                        <td><img id="navbar-singleplayer" alt="singleplayer"></td>
                         <td width="15"></td>
-                        <td><a href="/title.ws" id="menulink"><img src="navbar_mainmenu.gif" alt=""> Main Menu</a></td>
+                        <td><a href="/title.ws" id="menulink"><img id="navbar-mainmenu" alt=""> Main Menu</a></td>
                         <td width="15"></td>
-                        <td><a href="/serverlist.ws" id="menulink2"><img src="navbar_mainmenu.gif" alt=""> World Select</a></td>
+                        <td><a href="/serverlist.ws" id="menulink2"><img id="navbar-worldselect" alt=""> World Select</a></td>
                         <td width="15"></td>
-                        <td><a href="#" onclick="window.open('/worldmap.ws','WorldMap','width=635,height=550');return false;"><img src="navbar_worldmap.gif" alt=""> World Map</a></td>
+                        <td><a href="#" onclick="window.open('/worldmap.ws','WorldMap','width=635,height=550');return false;"><img id="navbar-worldmap" alt=""> World Map</a></td>
                         <td width="15"></td>
-                        <td><a href="/manual.ws"><img src="navbar_manual.gif" alt=""> Manual</a></td>
+                        <td><a href="/manual.ws"><img id="navbar-manual" alt=""> Manual</a></td>
                         <td width="15"></td>
-                        <td><a href="/rules.ws"><img src="navbar_rules.gif" alt=""> Rules</a></td>
+                        <td><a href="/rules.ws"><img id="navbar-rules" alt=""> Rules</a></td>
                         <td width="15"></td>
-                        <td><a href="/members.ws"><img src="navbar_members.gif" alt=""> Members</a></td>
+                        <td><a href="/members.ws"><img id="navbar-members" alt=""> Members</a></td>
                         <td width="5"></td>
                     </tr>
                 </table>
             </div>
-
         </div>
 
-        <!-- ================= GAME CANVAS (UNCHANGED) ================= -->
+        <!-- ================= GAME CANVAS ================= -->
         <div id="game">
             <canvas id="canvas" width="765" height="503">
                 Your browser is not capable of running our web client.
@@ -192,14 +339,24 @@
     </center>
 
     <script>
+        // ================= DYNAMIC HEADER IMAGES =================
+        const clientPath = '/client/'; // public/client folder
+        document.getElementById('banner-img').src = clientPath + 'banner_742x90.gif';
+        document.getElementById('navbar-container').style.backgroundImage = `url(${clientPath}navbar.gif)`;
+        document.getElementById('navbar-singleplayer').src = clientPath + 'navbar_singleplayer.gif';
+        document.getElementById('navbar-mainmenu').src = clientPath + 'navbar_mainmenu.gif';
+        document.getElementById('navbar-worldselect').src = clientPath + 'navbar_mainmenu.gif';
+        document.getElementById('navbar-worldmap').src = clientPath + 'navbar_worldmap.gif';
+        document.getElementById('navbar-manual').src = clientPath + 'navbar_manual.gif';
+        document.getElementById('navbar-rules').src = clientPath + 'navbar_rules.gif';
+        document.getElementById('navbar-members').src = clientPath + 'navbar_members.gif';
+
         const canvas = document.getElementById('canvas');
 
         if (canvas) {
             const ctx = canvas.getContext('2d');
-
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
             ctx.fillStyle = 'white';
             ctx.font = 'bold 20px Arial';
             ctx.textAlign = 'center';
