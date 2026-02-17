@@ -162,8 +162,37 @@
     <!-- ================= CONTROLS (UNCHANGED) ================= -->
 
     <div class="centered" id="controls">
-        <a class="green" href="#" onclick="toggleFullscreen();">Go Fullscreen</a> |
-        <a class="green" href="#" id="screenshot" onclick="saveScreenshot();">Take screenshot</a>
+        <select id="size" name="size" onchange="setSize();">
+            <optgroup>
+                <option value="1" id="1">1x Size</option>
+                <option value="2" id="2">2x Size</option>
+                <option value="3" id="3">3x Size</option>
+                <option value="auto" id="auto">Auto Sizing</option>
+            </optgroup>
+        </select> |
+        <select id="filtering" name="filtering" onchange="setFilter('dropdown');">
+            <optgroup>
+                <option value="auto" id="auto">Auto Scaling</option>
+                <option value="pixelated" id="pixelated">Pixel Scaling</option>
+            </optgroup>
+        </select> |
+        <span id="mobilekeyboard-container">
+            <select id="mobilekeyboard" name="mobilekeyboard" onchange="setKeyboardChoice();">
+                <optgroup>
+                    <option value="hybrid" id="hybrid">Hybrid keyboard</option>
+                    <option value="canvas" id="canvas">Canvas keyboard</option>
+                    <option value="native" id="native">Native keyboard</option>
+                </optgroup>
+            </select> |
+        </span>
+        <a class="green" href="#" id="fullscreen" onclick="toggleFullscreen();">Go Fullscreen</a> |
+        <a class="green" href="#" id="screenshot" onclick="saveScreenshot();">Take screenshot</a> |
+        <a class="green" href="#" id="hide" onclick="hideControls();">Hide controls</a>
+    </div>
+
+    <div id="hide-message" style="display: none;">
+        <p class="green blink">Controls have been hidden press ctrl+alt+i to unhide.</p>
+        <p class="green" id="count-down"></p>
     </div>
 
 </center>
@@ -265,7 +294,6 @@ function initNavbar() {
     });
 }
 
-// Initialize navbar on page load
 window.addEventListener('load', initNavbar);
 </script>
 
