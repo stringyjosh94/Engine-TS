@@ -96,12 +96,47 @@
         #mobilekeyboard-container {
             display: none;
         }
+
+        /* ================= HEADER / BANNER / NAVBAR ================= */
+        #header {
+            width: 765px;
+            margin-bottom: 0;
+        }
+
+        #navbar-container {
+            width: 765px;
+            height: 25px;
+        }
+
+        #navbar-container a.navbar-link {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        #navbar-container a.navbar-link span {
+            border-bottom: 2px solid transparent;
+        }
+
+        #navbar-container a.navbar-link:hover span {
+            border-bottom: 2px solid #04A800;
+        }
+
+        #navbar-container img {
+            vertical-align: middle;
+            display: inline-block;
+        }
     </style>
 
     <script>
-        // ================= ORIGINAL CLIENT SCRIPTS =================
         function isTouchDevice() {
-            return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+            return (('ontouchstart' in window) ||
+                (navigator.maxTouchPoints > 0) ||
+                (navigator.msMaxTouchPoints > 0));
         }
 
         function isMobile() {
@@ -177,7 +212,7 @@
             localStorage.removeItem('hideControls');
         }
 
-        document.addEventListener('keydown', function (e) {
+        document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.altKey) {
                 if (e.code === 'KeyI') {
                     e.preventDefault();
@@ -198,19 +233,14 @@
                 } else if (mobilekeyboard === 'native') {
                     keyboardChoiceElement.value = 'native';
                 } else {
-                    // Unset choice = hybrid
                     keyboardChoiceElement.value = 'hybrid';
                 }
             } else {
                 let size = localStorage.getItem('canvasSize');
-                if (size) {
-                    setSize(size);
-                }
+                if (size) { setSize(size); }
 
                 let controls = localStorage.getItem('hideControls');
-                if (controls === 'true') {
-                    hideControls();
-                }
+                if (controls === 'true') { hideControls(); }
             }
         }
 
@@ -222,9 +252,7 @@
 
         function setSize(size) {
             let canvas = document.getElementById('canvas');
-            if (size == null) {
-                size = document.getElementById('size').value;
-            }
+            if (size == null) { size = document.getElementById('size').value; }
             switch (size) {
                 default:
                 case '1':
@@ -265,30 +293,48 @@
 
 <body>
     <center>
-
         <!-- ================= HEADER / BANNER / NAVBAR ================= -->
-        <div id="header" style="width:765px; margin-bottom:5px;">
-            <div style="text-align:center;">
-                <img id="banner-img" alt="Banner">
-            </div>
-
-            <div style="width:765px; height:25px;" id="navbar-container">
+            <div id="navbar-container">
                 <table border="0" cellspacing="0" cellpadding="0" width="765" height="25">
                     <tr>
                         <td width="5"></td>
-                        <td><img id="navbar-singleplayer" alt="singleplayer"></td>
+                        <td><img src="client/navbar_singleplayer.gif" alt="singleplayer"></td>
                         <td width="15"></td>
-                        <td><a href="/title.ws" id="menulink"><img id="navbar-mainmenu" alt=""> Main Menu</a></td>
+                        <td>
+                            <a href="/title.ws" id="menulink" class="navbar-link">
+                                <img src="client/navbar_mainmenu.gif" alt=""> <span>Main Menu</span>
+                            </a>
+                        </td>
                         <td width="15"></td>
-                        <td><a href="/serverlist.ws" id="menulink2"><img id="navbar-worldselect" alt=""> World Select</a></td>
+                        <td>
+                            <a href="/serverlist.ws" id="menulink2" class="navbar-link">
+                                <img src="client/navbar_mainmenu.gif" alt=""> <span>World Select</span>
+                            </a>
+                        </td>
                         <td width="15"></td>
-                        <td><a href="#" onclick="window.open('/worldmap.ws','WorldMap','width=635,height=550');return false;"><img id="navbar-worldmap" alt=""> World Map</a></td>
+                        <td>
+                            <a href="#" onclick="window.open('/worldmap.ws','WorldMap','width=635,height=550');return false;" class="navbar-link">
+                                <img src="client/navbar_worldmap.gif" alt=""> <span>World Map</span>
+                            </a>
+                        </td>
                         <td width="15"></td>
-                        <td><a href="/manual.ws"><img id="navbar-manual" alt=""> Manual</a></td>
+                        <td>
+                            <a href="/manual.ws" class="navbar-link">
+                                <img src="client/navbar_manual.gif" alt=""> <span>Manual</span>
+                            </a>
+                        </td>
                         <td width="15"></td>
-                        <td><a href="/rules.ws"><img id="navbar-rules" alt=""> Rules</a></td>
+                        <td>
+                            <a href="/rules.ws" class="navbar-link">
+                                <img src="client/navbar_rules.gif" alt=""> <span>Rules & Security</span>
+                            </a>
+                        </td>
                         <td width="15"></td>
-                        <td><a href="/members.ws"><img id="navbar-members" alt=""> Members</a></td>
+                        <td>
+                            <a href="/members.ws" class="navbar-link">
+                                <img src="client/navbar_members.gif" alt=""> <span>Upgrade to Members</span>
+                            </a>
+                        </td>
                         <td width="5"></td>
                     </tr>
                 </table>
@@ -330,33 +376,21 @@
             <a class="green" href="#" id="screenshot" onclick="saveScreenshot();">Take screenshot</a> |
             <a class="green" href="#" id="hide" onclick="hideControls();">Hide controls</a>
         </div>
-
         <div id="hide-message" style="display: none;">
             <p class="green blink">Controls have been hidden press ctrl+alt+i to unhide.</p>
             <p class="green" id="count-down"></p>
         </div>
-
     </center>
 
     <script>
-        // ================= DYNAMIC HEADER IMAGES =================
-        const clientPath = '/client/'; // public/client folder
-        document.getElementById('banner-img').src = clientPath + 'banner_742x90.gif';
-        document.getElementById('navbar-container').style.backgroundImage = `url(${clientPath}navbar.gif)`;
-        document.getElementById('navbar-singleplayer').src = clientPath + 'navbar_singleplayer.gif';
-        document.getElementById('navbar-mainmenu').src = clientPath + 'navbar_mainmenu.gif';
-        document.getElementById('navbar-worldselect').src = clientPath + 'navbar_mainmenu.gif';
-        document.getElementById('navbar-worldmap').src = clientPath + 'navbar_worldmap.gif';
-        document.getElementById('navbar-manual').src = clientPath + 'navbar_manual.gif';
-        document.getElementById('navbar-rules').src = clientPath + 'navbar_rules.gif';
-        document.getElementById('navbar-members').src = clientPath + 'navbar_members.gif';
-
         const canvas = document.getElementById('canvas');
 
         if (canvas) {
             const ctx = canvas.getContext('2d');
+
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             ctx.fillStyle = 'white';
             ctx.font = 'bold 20px Arial';
             ctx.textAlign = 'center';
