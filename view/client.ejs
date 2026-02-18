@@ -8,8 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=0.7, viewport-fit=cover">
 
     <!-- Security: Basic CSP -->
-    <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline';">
+ <meta http-equiv="Content-Security-Policy"
+content="
+default-src 'self';
+img-src 'self' data:;
+script-src 'self' 'unsafe-inline';
+style-src 'self' 'unsafe-inline';
+">
 
     <style>
         html {
