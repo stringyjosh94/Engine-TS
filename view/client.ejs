@@ -7,52 +7,48 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.7, viewport-fit=cover">
 
-    <!-- Security: Basic CSP -->
- <meta http-equiv="Content-Security-Policy"
-content="
-default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
-img-src * data: blob:;
-script-src * 'unsafe-inline' 'unsafe-eval' blob:;
-style-src * 'unsafe-inline';
-connect-src * ws: wss:;
-worker-src * blob:;
-object-src *;
-">
+    <!-- Relaxed CSP suitable for game clients -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src * data: blob: 'unsafe-inline' 'unsafe-eval';">
 
+    <!-- Prevent favicon 404 -->
+    <link rel="icon" href="data:,">
 
     <style>
         html {
-            touch-action: manipulation;
-            overscroll-behavior: none;
             background-color: black;
+            overscroll-behavior: none;
+            touch-action: manipulation;
         }
 
         body {
             margin: 0;
-            overflow: auto;
             background-color: black;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding-bottom: env(safe-area-inset-bottom);
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 12px;
-            color: white;
+        }
+
+        #navbar-table {
+            margin-bottom: 0;
         }
 
         #game {
-            display: block;
+            display: flex;
+            justify-content: center;
         }
 
         canvas {
             width: 765px;
             height: 503px;
             display: block;
-            outline: none;
-            z-index: -1;
             image-rendering: pixelated;
             touch-action: none;
-            will-change: transform;
+            outline: none;
         }
 
         .centered {
@@ -64,18 +60,15 @@ object-src *;
             color: #04A800;
         }
 
-        a:focus {
-            outline: 2px solid #04A800;
+        .green:hover {
+            text-decoration: underline;
         }
 
         select {
             background-color: black;
             color: #04A800;
             border: none;
-        }
-
-        #mobilekeyboard-container {
-            display: none;
+            font-size: 12px;
         }
 
         .navbar-link {
@@ -90,50 +83,17 @@ object-src *;
         .navbar-link:hover {
             text-decoration: none;
         }
-
-        @keyframes blink {
-            50% { opacity: 0.5; }
-        }
-
-        .blink {
-            animation: blink 1.5s linear infinite;
-        }
     </style>
 
     <script>
-        function isTouchDevice() {
-            return ('ontouchstart' in window) ||
-                (navigator.maxTouchPoints > 0) ||
-                (navigator.msMaxTouchPoints > 0);
-        }
-
-        function isMobile() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone|Mobile/i.test(navigator.userAgent)
-                || isTouchDevice();
-        }
-
         function toggleFullscreen() {
-            const canvas = document.getElementById('canvas');
+            const wrapper = document.getElementById('game');
 
             if (document.fullscreenElement) {
                 document.exitFullscreen();
             } else {
-                canvas.requestFullscreen();
+                wrapper.requestFullscreen();
             }
-        }
-
-        function resizeCanvasForDPI() {
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-
-            const dpr = window.devicePixelRatio || 1;
-            const rect = canvas.getBoundingClientRect();
-
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.scale(dpr, dpr);
         }
 
         function saveScreenshot() {
@@ -144,10 +104,9 @@ object-src *;
             link.href = canvas.toDataURL('image/png');
         }
 
-        function setSize(size) {
+        function setSize() {
             const canvas = document.getElementById('canvas');
-
-            if (!size) size = document.getElementById('size').value;
+            const size = document.getElementById('size').value;
 
             if (size === 'auto') {
                 canvas.style.width = '100%';
@@ -158,110 +117,124 @@ object-src *;
             }
 
             localStorage.setItem('canvasSize', size);
-            resizeCanvasForDPI();
         }
 
-        function setFilter(type) {
+        function setFilter() {
             const canvas = document.getElementById('canvas');
-            let filterSelect = type === 'dropdown'
-                ? document.getElementById('filtering').value
-                : type;
+            const value = document.getElementById('filtering').value;
 
-            canvas.style.imageRendering = filterSelect;
-            localStorage.setItem('filtering', filterSelect === 'pixelated');
+            canvas.style.imageRendering = value;
+            localStorage.setItem('filtering', value === 'pixelated');
         }
 
         function loadSettings() {
-            const filtering = localStorage.getItem('filtering') === 'true';
-            setFilter(filtering ? 'pixelated' : 'auto');
-
             const size = localStorage.getItem('canvasSize');
-            if (size) setSize(size);
+            const filtering = localStorage.getItem('filtering');
 
-            if (isMobile()) {
-                document.getElementById('mobilekeyboard-container').style.display = 'inline-block';
+            if (size) {
+                document.getElementById('size').value = size;
+                setSize();
+            }
+
+            if (filtering === 'true') {
+                document.getElementById('filtering').value = 'pixelated';
+                setFilter();
             }
         }
-
-        window.addEventListener('resize', resizeCanvasForDPI);
-        document.addEventListener('fullscreenchange', resizeCanvasForDPI);
     </script>
 </head>
 
 <body>
 
     <!-- NAVBAR -->
-    <table border="0" background="/client/navbar.gif" cellspacing="0" cellpadding="0"
-        width="765" height="25">
+    <table id="navbar-table" border="0" background="/client/navbar.gif"
+        cellspacing="0" cellpadding="0" width="765" height="25">
         <tr>
             <td width="5"></td>
             <td><img src="/client/navbar_singleplayer.gif"></td>
             <td></td>
-            <td><a href="#" class="navbar-link">Main Menu</a></td>
+            <td>
+                <a href="#" class="navbar-link">
+                    <img src="/client/navbar_mainmenu.gif">
+                    Main Menu
+                </a>
+            </td>
             <td></td>
-            <td><a href="#" class="navbar-link">World Select</a></td>
+            <td>
+                <a href="#" class="navbar-link">
+                    <img src="/client/navbar_mainmenu.gif">
+                    World Select
+                </a>
+            </td>
             <td></td>
             <td>
                 <a onclick="window.open('/client/popupworldmap.ws','WorldMap','width=635,height=550,noopener,noreferrer');return false;"
                     href="#" class="navbar-link">
+                    <img src="/client/navbar_worldmap.gif">
                     World Map
                 </a>
             </td>
             <td></td>
-            <td><a href="/client/howtoplay.ws" target="_blank" class="navbar-link">Manual</a></td>
+            <td>
+                <a href="/client/howtoplay.ws" target="_blank" class="navbar-link">
+                    <img src="/client/navbar_manual.gif">
+                    Manual
+                </a>
+            </td>
             <td></td>
-            <td><a href="/client/guides/rules.ws" target="_blank" class="navbar-link">Rules & Security</a></td>
+            <td>
+                <a href="/client/guides/rules.ws" target="_blank" class="navbar-link">
+                    <img src="/client/navbar_rules.gif">
+                    Rules & Security
+                </a>
+            </td>
             <td></td>
-            <td><a href="/client/members/members.ws" target="_blank" class="navbar-link">Upgrade to Members</a></td>
+            <td>
+                <a href="/client/members/members.ws" target="_blank" class="navbar-link">
+                    <img src="/client/navbar_members.gif">
+                    Upgrade to Members
+                </a>
+            </td>
             <td width="5"></td>
         </tr>
     </table>
 
-    <!-- GAME -->
+    <!-- GAME WRAPPER -->
     <div id="game">
-        <canvas id="canvas" width="765" height="503" role="application"
-            aria-label="2004Scape Game Client">
+        <canvas id="canvas" width="765" height="503">
             Your browser does not support the game client.
         </canvas>
     </div>
 
     <!-- CONTROLS -->
-    <div class="centered">
-        <select id="size" onchange="setSize();">
+    <div class="centered" style="margin-top: 6px; margin-bottom: 10px;">
+        <select id="size" onchange="setSize()">
             <option value="1">1x Size</option>
             <option value="2">2x Size</option>
             <option value="3">3x Size</option>
             <option value="auto">Auto Sizing</option>
         </select> |
-        <select id="filtering" onchange="setFilter('dropdown');">
+        <select id="filtering" onchange="setFilter()">
             <option value="auto">Auto Scaling</option>
             <option value="pixelated">Pixel Scaling</option>
         </select> |
-        <span id="mobilekeyboard-container">
-            <select id="mobilekeyboard">
-                <option value="hybrid">Hybrid keyboard</option>
-                <option value="canvas">Canvas keyboard</option>
-                <option value="native">Native keyboard</option>
-            </select> |
-        </span>
-        <a class="green" href="#" onclick="toggleFullscreen()">Go Fullscreen</a> |
-        <a class="green" id="screenshot" href="#" onclick="saveScreenshot()">Take screenshot</a>
+        <a class="green" href="#" onclick="toggleFullscreen(); return false;">Go Fullscreen</a> |
+        <a class="green" id="screenshot" href="#" onclick="saveScreenshot(); return false;">Take screenshot</a>
     </div>
 
-    <!-- LOADING SCREEN -->
+    <!-- Loading screen -->
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
 
         ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, 765, 503);
 
         ctx.fillStyle = 'white';
         ctx.font = 'bold 20px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('Loading...', canvas.width / 2, canvas.height / 2);
+        ctx.fillText('Loading...', 382, 251);
 
-        resizeCanvasForDPI();
         loadSettings();
     </script>
 
