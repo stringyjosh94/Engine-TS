@@ -58,15 +58,12 @@
             text-align: center;
         }
 
-        .green-link {
-            color: white;
+        .green {
             text-decoration: none;
-            margin-left: 4px;
-            font-size: 12px;
+            color: #04A800;
         }
 
-        .green-link:hover {
-            color: #04A800;
+        .green:hover {
             text-decoration: underline;
         }
 
@@ -104,34 +101,56 @@
             display: none;
         }
 
-        /* Navbar styling */
-        #navbar {
-            width: 765px;
-            height: 25px;
-            background: url('public/client/navbar.gif') no-repeat;
-            display: flex;
-            align-items: center;
-            margin: 0 auto;
+        /* Fix dropdown colors */
+        select,
+        optgroup,
+        option {
+            background-color: black !important;
+            color: #04A800 !important;
         }
 
-        #navbar img.icon {
-            vertical-align: middle;
-            margin: 0 2px 0 2px;
+        select option:hover {
+            background-color: #222 !important;
+            color: #04A800 !important;
+        }
+
+        /* Navbar */
+        #navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('navbar.gif') no-repeat;
+            height: 25px;
+            margin-bottom: 0px;
         }
 
         #navbar a {
             display: flex;
             align-items: center;
-            margin-right: 8px;
+            margin: 0 5px;
+            text-decoration: none;
+            color: white;
+            font-size: 12px;
+        }
+
+        #navbar a:hover {
+            color: #04A800;
+            text-decoration: underline;
+        }
+
+        #navbar img {
+            vertical-align: middle;
+            margin-right: 2px;
         }
 
         #navbar span {
-            margin-left: 2px;
+            white-space: nowrap;
         }
 
     </style>
 
     <script>
+        // Original functions preserved
         function isTouchDevice() {
             return (('ontouchstart' in window) ||
                 (navigator.maxTouchPoints > 0) ||
@@ -190,6 +209,7 @@
         let timer;
         let countDown = 0;
         let countDownMax = 10;
+
         function hideMessage() {
             if (countDown >= countDownMax) {
                 document.getElementById('hide-message').style.display = 'none';
@@ -236,10 +256,14 @@
                 }
             } else {
                 let size = localStorage.getItem('canvasSize');
-                if (size) { setSize(size); }
+                if (size) {
+                    setSize(size);
+                }
 
                 let controls = localStorage.getItem('hideControls');
-                if (controls === 'true') { hideControls(); }
+                if (controls === 'true') {
+                    hideControls();
+                }
             }
         }
 
@@ -251,7 +275,9 @@
 
         function setSize(size) {
             let canvas = document.getElementById('canvas');
-            if (size == null) { size = document.getElementById('size').value; }
+            if (size == null) {
+                size = document.getElementById('size').value;
+            }
             switch (size) {
                 default:
                 case '1':
@@ -292,46 +318,45 @@
 
 <body>
     <center>
+
         <!-- Navbar -->
         <div id="navbar">
-            <img src="public/client/navbar_singleplayer.gif" class="icon">
-            <a href="#" class="green-link"><img src="public/client/navbar_mainmenu.gif" class="icon"><span>Main Menu</span></a>
-            <a href="#" class="green-link"><img src="public/client/navbar_mainmenu.gif" class="icon"><span>World Select</span></a>
-            <a href="#" class="green-link"><img src="public/client/navbar_worldmap.gif" class="icon"><span>World Map</span></a>
-            <a href="#" class="green-link"><img src="public/client/navbar_manual.gif" class="icon"><span>Manual</span></a>
-            <a href="#" class="green-link"><img src="public/client/navbar_rules.gif" class="icon"><span>Rules & Security</span></a>
-            <a href="#" class="green-link"><img src="public/client/navbar_members.gif" class="icon"><span>Upgrade to Members</span></a>
+            <img src="navbar_singleplayer.gif" alt="Logo">
+            <a href="#"><img src="navbar_mainmenu.gif" alt="Main Menu"><span>Main Menu</span></a>
+            <a href="#"><img src="navbar_mainmenu.gif" alt="World Select"><span>World Select</span></a>
+            <a href="#"><img src="navbar_worldmap.gif" alt="World Map"><span>World Map</span></a>
+            <a href="#"><img src="navbar_manual.gif" alt="Manual"><span>Manual</span></a>
+            <a href="#"><img src="navbar_rules.gif" alt="Rules & Security"><span>Rules & Security</span></a>
+            <a href="#"><img src="navbar_members.gif" alt="Upgrade to Members"><span>Upgrade to Members</span></a>
         </div>
 
-        <!-- Game canvas -->
         <div id="game">
             <canvas id="canvas" width="765" height="503">
                 Your browser is not capable of running our web client.
             </canvas>
         </div>
 
-        <!-- Controls -->
         <div class="centered" id="controls">
             <select id="size" name="size" onchange="setSize();">
                 <optgroup>
-                    <option value="1" id="1">1x Size</option>
-                    <option value="2" id="2">2x Size</option>
-                    <option value="3" id="3">3x Size</option>
-                    <option value="auto" id="auto">Auto Sizing</option>
+                    <option value="1">1x Size</option>
+                    <option value="2">2x Size</option>
+                    <option value="3">3x Size</option>
+                    <option value="auto">Auto Sizing</option>
                 </optgroup>
             </select> |
             <select id="filtering" name="filtering" onchange="setFilter('dropdown');">
                 <optgroup>
-                    <option value="auto" id="auto">Auto Scaling</option>
-                    <option value="pixelated" id="pixelated">Pixel Scaling</option>
+                    <option value="auto">Auto Scaling</option>
+                    <option value="pixelated">Pixel Scaling</option>
                 </optgroup>
             </select> |
             <span id="mobilekeyboard-container">
                 <select id="mobilekeyboard" name="mobilekeyboard" onchange="setKeyboardChoice();">
                     <optgroup>
-                        <option value="hybrid" id="hybrid">Hybrid keyboard</option>
-                        <option value="canvas" id="canvas">Canvas keyboard</option>
-                        <option value="native" id="native">Native keyboard</option>
+                        <option value="hybrid">Hybrid keyboard</option>
+                        <option value="canvas">Canvas keyboard</option>
+                        <option value="native">Native keyboard</option>
                     </optgroup>
                 </select> |
             </span>
@@ -339,7 +364,6 @@
             <a class="green" href="#" id="screenshot" onclick="saveScreenshot();">Take screenshot</a> |
             <a class="green" href="#" id="hide" onclick="hideControls();">Hide controls</a>
         </div>
-
         <div id="hide-message" style="display: none;">
             <p class="green blink">Controls have been hidden press ctrl+alt+i to unhide.</p>
             <p class="green" id="count-down"></p>
