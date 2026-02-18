@@ -21,7 +21,7 @@
         }
 
         body {
-            margin: 0px;
+            margin: 0px 0px;
             overflow: auto;
             background-color: black;
         }
@@ -68,7 +68,7 @@
             margin-bottom: 10px;
         }
 
-        #controls>a,
+        #controls > a,
         #controls select,
         #controls optgroup,
         #controls optgroup>option {
@@ -97,46 +97,25 @@
             display: none;
         }
 
-        /* NAVBAR MENU */
-        #navbar-container {
-            position: relative;
-            width: 765px;
-            margin: 0 auto;
-        }
-
-        #navbar {
-            background: url('client/navbar.gif') no-repeat;
-            width: 100%;
-            height: 25px;
-            position: relative;
-        }
-
-        #navbar img {
-            vertical-align: middle;
-        }
-
-        #navbar .nav-link {
-            display: flex;
+        /* Navbar styles */
+        .navbar-link {
+            color: white;
+            text-decoration: underline;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            display: inline-flex;
             align-items: center;
             gap: 3px;
-            font-size: 12px;
-            color: white;
+        }
+
+        .navbar-link:hover {
             text-decoration: none;
+            color: white;
         }
 
-        #navbar .nav-link:hover {
-            text-decoration: underline;
-            color: white; /* keep white on hover */
-        }
-
-        #navbar-menu {
-            position: absolute;
-            left: 60px;
-            top: 0;
-            height: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        /* Adjust table spacing for navbar to reduce gap above canvas */
+        #navbar-table {
+            margin-bottom: 0;
         }
     </style>
 
@@ -155,28 +134,30 @@
             return isTouchDevice();
         }
 
-        function updateNavbarWidth() {
-            const canvas = document.getElementById('canvas');
-            const navbarContainer = document.getElementById('navbar-container');
-            if (canvas && navbarContainer) {
-                navbarContainer.style.width = canvas.offsetWidth + 'px';
-            }
-        }
-
         function toggleFullscreen() {
-            const element = document.getElementById('canvas');
             if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
-                if (document.exitFullscreen) document.exitFullscreen();
-                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-                else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
-                else if (document.msExitFullscreen) document.msExitFullscreen();
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
             } else {
-                if (element.requestFullscreen) element.requestFullscreen();
-                else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
-                else if (element.mozRequestFullScreen) element.mozRequestFullScreen();
-                else if (element.msRequestFullscreen) element.msRequestFullscreen();
+                let element = document.getElementById('canvas');
+
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
+                }
             }
-            setTimeout(updateNavbarWidth, 50); // ensure navbar scales after fullscreen
         }
 
         function saveScreenshot() {
@@ -235,13 +216,23 @@
                 const keyboardChoiceElement = document.getElementById('mobilekeyboard');
                 keyboardChoiceContainerElement.style.display = 'inline-block';
                 let mobilekeyboard = localStorage.getItem('mobileKeyboardMode');
-                keyboardChoiceElement.value = mobilekeyboard || 'hybrid';
+                if (mobilekeyboard === 'canvas') {
+                    keyboardChoiceElement.value = 'canvas';
+                } else if (mobilekeyboard === 'native') {
+                    keyboardChoiceElement.value = 'native';
+                } else {
+                    keyboardChoiceElement.value = 'hybrid';
+                }
             } else {
                 let size = localStorage.getItem('canvasSize');
-                if (size) setSize(size);
+                if (size) {
+                    setSize(size);
+                }
 
                 let controls = localStorage.getItem('hideControls');
-                if (controls === 'true') hideControls();
+                if (controls === 'true') {
+                    hideControls();
+                }
             }
         }
 
@@ -252,8 +243,10 @@
         }
 
         function setSize(size) {
-            const canvas = document.getElementById('canvas');
-            if (!size) size = document.getElementById('size').value;
+            let canvas = document.getElementById('canvas');
+            if (size == null) {
+                size = document.getElementById('size').value;
+            }
             switch (size) {
                 default:
                 case '1':
@@ -270,11 +263,10 @@
             }
             document.getElementById('size').value = size;
             localStorage.setItem('canvasSize', size);
-            updateNavbarWidth();
         }
 
         function setFilter(type) {
-            const canvas = document.getElementById('canvas');
+            let canvas = document.getElementById('canvas');
             let filterSelect = 'auto';
             switch (type) {
                 default:
@@ -293,33 +285,70 @@
     </script>
 </head>
 
-<body onload="loadSettings();">
+<body>
     <center>
 
-        <!-- NAVBAR -->
-        <div id="navbar-container">
-            <div id="navbar">
-                <img src="client/navbar_singleplayer.gif" style="position: absolute; left: 5px; top: 0; height:25px;">
+        <!-- Navbar with local GIFs -->
+        <table id="navbar-table" border="0" background="/client/navbar.gif" cellspacing="0" cellpadding="0" width="765" height="25">
+            <tbody>
+                <tr>
+                    <td width="5"></td>
+                    <td><img border="0" name="2004scapeimg" src="/client/navbar_singleplayer.gif" style="vertical-align: middle"></td>
+                    <td></td>
+                    <td valign="middle">
+                        <a href="#" id="menulink" class="navbar-link">
+                            <img border="0" name="2004scapeimg" src="/client/navbar_mainmenu.gif" style="vertical-align: middle">
+                            Main Menu
+                        </a>
+                    </td>
+                    <td></td>
+                    <td valign="middle">
+                        <a href="#" id="menulink2" class="navbar-link">
+                            <img border="0" name="2004scapeimg" src="/client/navbar_mainmenu.gif" style="vertical-align: middle">
+                            World Select
+                        </a>
+                    </td>
+                    <td></td>
+                    <td valign="middle">
+                        <a onclick="window.open('/client/popupworldmap.ws','WorldMap','width=635,height=550');return false;" href="#" class="navbar-link">
+                            <img border="0" name="worldmapimg" src="/client/navbar_worldmap.gif" style="vertical-align: middle">
+                            World Map
+                        </a>
+                    </td>
+                    <td></td>
+                    <td valign="middle">
+                        <a href="/client/howtoplay.ws" target="Manual" class="navbar-link">
+                            <img border="0" name="manualimg" src="/client/navbar_manual.gif" style="vertical-align: middle">
+                            Manual
+                        </a>
+                    </td>
+                    <td></td>
+                    <td valign="middle">
+                        <a href="/client/guides/rules.ws" target="RulesSecurity" class="navbar-link">
+                            <img border="0" src="/client/navbar_rules.gif" style="vertical-align: middle">
+                            Rules & Security
+                        </a>
+                    </td>
+                    <td></td>
+                    <td valign="middle">
+                        <a href="/client/members/members.ws" target="UpgradetoMembers" class="navbar-link">
+                            <img border="0" src="/client/navbar_members.gif" style="vertical-align: middle">
+                            Upgrade to Members
+                        </a>
+                    </td>
+                    <td width="5"></td>
+                </tr>
+            </tbody>
+        </table>
 
-                <div id="navbar-menu">
-                    <a class="nav-link" href="#" id="menulink"><img src="client/navbar_mainmenu.gif">Main Menu</a>
-                    <a class="nav-link" href="#" id="menulink2"><img src="client/navbar_mainmenu.gif">World Select</a>
-                    <a class="nav-link" href="#" onclick="window.open('client/worldmap.html','WorldMap','width=635,height=550');return false;"><img src="client/navbar_worldmap.gif">World Map</a>
-                    <a class="nav-link" href="client/manual.html" target="Manual"><img src="client/navbar_manual.gif">Manual</a>
-                    <a class="nav-link" href="client/rules.html" target="RulesSecurity"><img src="client/navbar_rules.gif">Rules & Security</a>
-                    <a class="nav-link" href="client/members.html" target="UpgradetoMembers"><img src="client/navbar_members.gif">Upgrade to Members</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- GAME CANVAS -->
+        <!-- Game Canvas -->
         <div id="game">
             <canvas id="canvas" width="765" height="503">
                 Your browser is not capable of running our web client.
             </canvas>
         </div>
 
-        <!-- BOTTOM CONTROLS -->
+        <!-- Controls (unchanged) -->
         <div class="centered" id="controls">
             <select id="size" name="size" onchange="setSize();">
                 <optgroup>
@@ -354,7 +383,6 @@
         </div>
     </center>
 
-    <!-- Loading placeholder -->
     <script>
         const canvas = document.getElementById('canvas');
 
@@ -377,6 +405,8 @@
         (() => {
             new Client(<%= nodeid %>, <%= lowmem %>, <%= members %>);
         })();
+
+        loadSettings();
     </script>
 </body>
 
