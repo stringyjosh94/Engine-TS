@@ -7,18 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=0.7">
 
     <style>
-        body {
-            margin: 0;
-            overflow: auto;
-            background-color: black;
+        body,
+        td,
+        p {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 12px;
             color: white;
+            margin: 0;
         }
 
-        #game {
-            margin: 0 auto;
-            display: block;
+        body {
+            background-color: black;
+            overflow: auto;
         }
 
         canvas {
@@ -31,33 +31,34 @@
             user-select: none;
             outline: none;
             image-rendering: pixelated;
+            margin: 0 auto;
         }
 
         /* Navbar styling */
-        #navbar-container {
+        #navbar {
             width: 765px;
+            height: 25px;
             margin: 0 auto;
             position: relative;
-            height: 25px;
-            background: url('navbar.gif') no-repeat;
+            background: url('client/navbar.gif') no-repeat;
         }
 
-        #navbar-container a {
+        #navbar a {
             display: inline-flex;
             align-items: center;
             margin-left: 5px;
             height: 25px;
             text-decoration: none;
             color: white;
-            font-size: 12px;
+            font-size: 11px;
         }
 
-        #navbar-container a:hover {
+        #navbar a:hover {
             color: #04A800;
             text-decoration: underline;
         }
 
-        #navbar-container img {
+        #navbar img {
             vertical-align: middle;
             margin-right: 2px;
         }
@@ -89,83 +90,38 @@
             display: none;
         }
     </style>
-
-    <script>
-        // All original JS preserved
-        function toggleFullscreen() {
-            let el = document.getElementById('canvas');
-            if (!document.fullscreenElement) el.requestFullscreen();
-            else document.exitFullscreen();
-        }
-
-        function saveScreenshot() {
-            let link = document.getElementById('screenshot');
-            link.download = 'screenshot-' + Math.floor(Date.now() / 1000) + '.png';
-            link.href = document.getElementById('canvas').toDataURL('image/png').replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-        }
-
-        function setSize(size) {
-            let canvas = document.getElementById('canvas');
-            if (!size) size = document.getElementById('size').value;
-            switch(size) {
-                case '1': case '2': case '3':
-                    canvas.style.width = (765 * parseInt(size)) + 'px';
-                    canvas.style.height = (503 * parseInt(size)) + 'px';
-                    break;
-                case 'auto':
-                    canvas.style.width = '100%';
-                    canvas.style.height = 'auto';
-                    break;
-            }
-            localStorage.setItem('canvasSize', size);
-        }
-
-        function setFilter(type) {
-            let canvas = document.getElementById('canvas');
-            let filterSelect = type || document.getElementById('filtering').value;
-            canvas.style.imageRendering = filterSelect;
-            if (type === 'dropdown') localStorage.setItem('filtering', filterSelect == 'auto' ? false : true);
-            else document.getElementById('filtering').value = filterSelect;
-        }
-
-        function loadSettings() {
-            setFilter((localStorage.getItem('filtering')=='true') ? 'pixelated' : 'auto');
-            let size = localStorage.getItem('canvasSize');
-            if (size) setSize(size);
-        }
-    </script>
 </head>
 
 <body>
     <center>
         <!-- Navbar -->
-        <div id="navbar-container">
+        <div id="navbar">
             <!-- Jagex logo -->
-            <img src="navbar_singleplayer.gif" height="25" alt="singleplayer">
+            <img src="client/navbar_singleplayer.gif" height="25" alt="singleplayerLogo">
 
-            <!-- Menu links with individual GIFs -->
-            <a href="#">
-                <img src="navbar_mainmenu.gif" height="16" alt="Main Menu">
+            <!-- Menu links with local GIFs -->
+            <a href="title.ws" id="menulink">
+                <img src="client/navbar_mainmenu.gif" height="16" alt="Main Menu">
                 Main Menu
             </a>
-            <a href="#">
-                <img src="navbar_mainmenu.gif" height="16" alt="World Select">
+            <a href="serverlist.ws?lores.x=1&plugin=0" id="menulink2">
+                <img src="client/navbar_mainmenu.gif" height="16" alt="World Select">
                 World Select
             </a>
-            <a href="#">
-                <img src="navbar_worldmap.gif" height="16" alt="World Map">
+            <a href="worldmap/popupworldmap.ws" target="WorldMap">
+                <img src="client/navbar_worldmap.gif" height="16" alt="World Map">
                 World Map
             </a>
-            <a href="#">
-                <img src="navbar_manual.gif" height="16" alt="Manual">
+            <a href="howtoplay.ws" target="Manual">
+                <img src="client/navbar_manual.gif" height="16" alt="Manual">
                 Manual
             </a>
-            <a href="#">
-                <img src="navbar_rules.gif" height="16" alt="Rules & Security">
+            <a href="guides/rules.ws" target="RulesSecurity">
+                <img src="client/navbar_rules.gif" height="16" alt="Rules & Security">
                 Rules & Security
             </a>
-            <a href="#">
-                <img src="navbar_members.gif" height="16" alt="Upgrade to Members">
+            <a href="members/members.ws" target="UpgradetoMembers">
+                <img src="client/navbar_members.gif" height="16" alt="Upgrade to Members">
                 Upgrade to Members
             </a>
         </div>
@@ -177,27 +133,32 @@
             </canvas>
         </div>
 
-        <!-- Controls -->
+        <!-- Controls (UNCHANGED) -->
         <div id="controls">
-            <select id="size" onchange="setSize();">
-                <option value="1">1x Size</option>
-                <option value="2">2x Size</option>
-                <option value="3">3x Size</option>
-                <option value="auto">Auto</option>
+            <select id="size" name="size" onchange="setSize();">
+                <option value="1" id="1">1x Size</option>
+                <option value="2" id="2">2x Size</option>
+                <option value="3" id="3">3x Size</option>
+                <option value="auto" id="auto">Auto Sizing</option>
             </select> |
-            <select id="filtering" onchange="setFilter('dropdown');">
-                <option value="auto">Auto Scaling</option>
-                <option value="pixelated">Pixel Scaling</option>
+            <select id="filtering" name="filtering" onchange="setFilter('dropdown');">
+                <option value="auto" id="auto">Auto Scaling</option>
+                <option value="pixelated" id="pixelated">Pixel Scaling</option>
             </select> |
             <span id="mobilekeyboard-container">
-                <select id="mobilekeyboard" onchange="alert('Reload to apply');">
-                    <option value="hybrid">Hybrid</option>
-                    <option value="canvas">Canvas</option>
-                    <option value="native">Native</option>
+                <select id="mobilekeyboard" name="mobilekeyboard" onchange="setKeyboardChoice();">
+                    <option value="hybrid" id="hybrid">Hybrid keyboard</option>
+                    <option value="canvas" id="canvas">Canvas keyboard</option>
+                    <option value="native" id="native">Native keyboard</option>
                 </select> |
             </span>
-            <a class="green" href="#" onclick="toggleFullscreen();">Go Fullscreen</a> |
-            <a class="green" href="#" id="screenshot" onclick="saveScreenshot();">Take screenshot</a>
+            <a class="green" href="#" id="fullscreen" onclick="toggleFullscreen();">Go Fullscreen</a> |
+            <a class="green" href="#" id="screenshot" onclick="saveScreenshot();">Take screenshot</a> |
+            <a class="green" href="#" id="hide" onclick="hideControls();">Hide controls</a>
+        </div>
+        <div id="hide-message" style="display: none;">
+            <p class="green blink">Controls have been hidden press ctrl+alt+i to unhide.</p>
+            <p class="green" id="count-down"></p>
         </div>
     </center>
 
