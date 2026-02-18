@@ -58,9 +58,16 @@
             text-align: center;
         }
 
-        .green {
+        .green-link {
+            color: white;
             text-decoration: none;
+            margin-left: 4px;
+            font-size: 12px;
+        }
+
+        .green-link:hover {
             color: #04A800;
+            text-decoration: underline;
         }
 
         #controls {
@@ -97,39 +104,31 @@
             display: none;
         }
 
-        /* ================= HEADER / BANNER / NAVBAR ================= */
-        #header {
-            width: 765px;
-            margin-bottom: 0;
-        }
-
-        #navbar-container {
+        /* Navbar styling */
+        #navbar {
             width: 765px;
             height: 25px;
-        }
-
-        #navbar-container a.navbar-link {
+            background: url('public/client/navbar.gif') no-repeat;
             display: flex;
             align-items: center;
-            gap: 3px;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 12px;
+            margin: 0 auto;
         }
 
-        #navbar-container a.navbar-link span {
-            border-bottom: 2px solid transparent;
-        }
-
-        #navbar-container a.navbar-link:hover span {
-            border-bottom: 2px solid #04A800;
-        }
-
-        #navbar-container img {
+        #navbar img.icon {
             vertical-align: middle;
-            display: inline-block;
+            margin: 0 2px 0 2px;
         }
+
+        #navbar a {
+            display: flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+
+        #navbar span {
+            margin-left: 2px;
+        }
+
     </style>
 
     <script>
@@ -212,7 +211,7 @@
             localStorage.removeItem('hideControls');
         }
 
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if ((e.ctrlKey || e.metaKey) && e.altKey) {
                 if (e.code === 'KeyI') {
                     e.preventDefault();
@@ -293,61 +292,25 @@
 
 <body>
     <center>
-        <!-- ================= HEADER / BANNER / NAVBAR ================= -->
-            <div id="navbar-container">
-                <table border="0" cellspacing="0" cellpadding="0" width="765" height="25">
-                    <tr>
-                        <td width="5"></td>
-                        <td><img src="client/navbar_singleplayer.gif" alt="singleplayer"></td>
-                        <td width="15"></td>
-                        <td>
-                            <a href="/title.ws" id="menulink" class="navbar-link">
-                                <img src="client/navbar_mainmenu.gif" alt=""> <span>Main Menu</span>
-                            </a>
-                        </td>
-                        <td width="15"></td>
-                        <td>
-                            <a href="/serverlist.ws" id="menulink2" class="navbar-link">
-                                <img src="client/navbar_mainmenu.gif" alt=""> <span>World Select</span>
-                            </a>
-                        </td>
-                        <td width="15"></td>
-                        <td>
-                            <a href="#" onclick="window.open('/worldmap.ws','WorldMap','width=635,height=550');return false;" class="navbar-link">
-                                <img src="client/navbar_worldmap.gif" alt=""> <span>World Map</span>
-                            </a>
-                        </td>
-                        <td width="15"></td>
-                        <td>
-                            <a href="/manual.ws" class="navbar-link">
-                                <img src="client/navbar_manual.gif" alt=""> <span>Manual</span>
-                            </a>
-                        </td>
-                        <td width="15"></td>
-                        <td>
-                            <a href="/rules.ws" class="navbar-link">
-                                <img src="client/navbar_rules.gif" alt=""> <span>Rules & Security</span>
-                            </a>
-                        </td>
-                        <td width="15"></td>
-                        <td>
-                            <a href="/members.ws" class="navbar-link">
-                                <img src="client/navbar_members.gif" alt=""> <span>Upgrade to Members</span>
-                            </a>
-                        </td>
-                        <td width="5"></td>
-                    </tr>
-                </table>
-            </div>
+        <!-- Navbar -->
+        <div id="navbar">
+            <img src="public/client/navbar_singleplayer.gif" class="icon">
+            <a href="#" class="green-link"><img src="public/client/navbar_mainmenu.gif" class="icon"><span>Main Menu</span></a>
+            <a href="#" class="green-link"><img src="public/client/navbar_mainmenu.gif" class="icon"><span>World Select</span></a>
+            <a href="#" class="green-link"><img src="public/client/navbar_worldmap.gif" class="icon"><span>World Map</span></a>
+            <a href="#" class="green-link"><img src="public/client/navbar_manual.gif" class="icon"><span>Manual</span></a>
+            <a href="#" class="green-link"><img src="public/client/navbar_rules.gif" class="icon"><span>Rules & Security</span></a>
+            <a href="#" class="green-link"><img src="public/client/navbar_members.gif" class="icon"><span>Upgrade to Members</span></a>
         </div>
 
-        <!-- ================= GAME CANVAS ================= -->
+        <!-- Game canvas -->
         <div id="game">
             <canvas id="canvas" width="765" height="503">
                 Your browser is not capable of running our web client.
             </canvas>
         </div>
 
+        <!-- Controls -->
         <div class="centered" id="controls">
             <select id="size" name="size" onchange="setSize();">
                 <optgroup>
@@ -376,6 +339,7 @@
             <a class="green" href="#" id="screenshot" onclick="saveScreenshot();">Take screenshot</a> |
             <a class="green" href="#" id="hide" onclick="hideControls();">Hide controls</a>
         </div>
+
         <div id="hide-message" style="display: none;">
             <p class="green blink">Controls have been hidden press ctrl+alt+i to unhide.</p>
             <p class="green" id="count-down"></p>
