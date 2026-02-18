@@ -3,7 +3,6 @@
 
 <head>
     <title>2004Scape Game</title>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.7">
 
@@ -21,7 +20,7 @@
         }
 
         body {
-            margin: 0px 0px;
+            margin: 0;
             overflow: auto;
             background-color: black;
         }
@@ -31,6 +30,7 @@
             padding-right: 0;
             margin-left: auto;
             margin-right: auto;
+            margin-top: 0;
             display: block;
         }
 
@@ -71,7 +71,7 @@
         #controls > a,
         #controls select,
         #controls optgroup,
-        #controls optgroup>option {
+        #controls optgroup > option {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 12px;
         }
@@ -101,39 +101,39 @@
         #navbar {
             width: 765px;
             height: 25px;
-            margin: 0 auto 5px auto;
-            position: relative;
-            background: url('client/navbar.gif') no-repeat;
-            display: flex;
-            align-items: center;
-            padding-left: 5px;
+            background: url('/client/navbar.gif') no-repeat;
+            margin: 0 auto 0 auto;
+            border-collapse: collapse;
+            table-layout: fixed;
         }
 
-        #navbar img {
-            display: inline-block;
+        #navbar td {
+            padding: 0 5px;
+            vertical-align: middle;
         }
 
         #navbar a {
-            display: inline-flex;
-            align-items: center;
-            margin-right: 5px;
             color: white;
-            text-decoration: none;
-            font-size: 11px;
-        }
-
-        #navbar a span {
-            white-space: nowrap;
-            text-decoration: none;
-        }
-
-        #navbar a:hover span {
             text-decoration: underline;
+            font-size: 11px;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-        #navbar img.menu-icon {
-            margin-right: 2px;
+        #navbar a:hover {
+            text-decoration: none;
+            color: white; /* keep text white on hover */
         }
+
+        #navbar img {
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        /* spacing from logo */
+        #navbar .menu-link {
+            padding-left: 5px;
+        }
+
     </style>
 
     <script>
@@ -237,15 +237,18 @@
                 } else if (mobilekeyboard === 'native') {
                     keyboardChoiceElement.value = 'native';
                 } else {
-                    // Unset choice = hybrid
                     keyboardChoiceElement.value = 'hybrid';
                 }
             } else {
                 let size = localStorage.getItem('canvasSize');
-                if (size) { setSize(size); }
+                if (size) {
+                    setSize(size);
+                }
 
                 let controls = localStorage.getItem('hideControls');
-                if (controls === 'true') { hideControls(); }
+                if (controls === 'true') {
+                    hideControls();
+                }
             }
         }
 
@@ -257,7 +260,9 @@
 
         function setSize(size) {
             let canvas = document.getElementById('canvas');
-            if (size == null) { size = document.getElementById('size').value; }
+            if (size == null) {
+                size = document.getElementById('size').value;
+            }
             switch (size) {
                 default:
                 case '1':
@@ -299,44 +304,39 @@
 <body>
     <center>
 
-        <!-- Navbar -->
-        <div id="navbar">
-            <img src="client/navbar_singleplayer.gif" height="25" alt="singleplayerLogo">
+        <!-- NAVBAR -->
+        <table id="navbar" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td width="5"></td>
+                <td><img src="/client/navbar_singleplayer.gif" alt="singleplayerLogo"></td>
+                <td class="menu-link">
+                    <a id="menulink" href="/client/title.ws"><img src="/client/navbar_mainmenu.gif" alt=""> Main Menu</a>
+                </td>
+                <td class="menu-link">
+                    <a id="menulink2" href="/client/serverlist.ws"><img src="/client/navbar_mainmenu.gif" alt=""> World Select</a>
+                </td>
+                <td class="menu-link">
+                    <a href="#" onclick="window.open('/client/popupworldmap.ws','WorldMap','width=635,height=550');return false;"><img src="/client/navbar_worldmap.gif" alt=""> World Map</a>
+                </td>
+                <td class="menu-link">
+                    <a href="/client/howtoplay.ws" target="Manual"><img src="/client/navbar_manual.gif" alt=""> Manual</a>
+                </td>
+                <td class="menu-link">
+                    <a href="/client/guides/rules.ws" target="RulesSecurity"><img src="/client/navbar_rules.gif" alt=""> Rules & Security</a>
+                </td>
+                <td class="menu-link">
+                    <a href="/client/members/members.ws" target="UpgradetoMembers"><img src="/client/navbar_members.gif" alt=""> Upgrade to Members</a>
+                </td>
+            </tr>
+        </table>
 
-            <a href="title.ws" id="menulink">
-                <img class="menu-icon" src="client/navbar_mainmenu.gif" height="16" alt="Main Menu">
-                <span>Main Menu</span>
-            </a>
-            <a href="serverlist.ws?lores.x=1&plugin=0" id="menulink2">
-                <img class="menu-icon" src="client/navbar_mainmenu.gif" height="16" alt="World Select">
-                <span>World Select</span>
-            </a>
-            <a href="worldmap/popupworldmap.ws" target="WorldMap">
-                <img class="menu-icon" src="client/navbar_worldmap.gif" height="16" alt="World Map">
-                <span>World Map</span>
-            </a>
-            <a href="howtoplay.ws" target="Manual">
-                <img class="menu-icon" src="client/navbar_manual.gif" height="16" alt="Manual">
-                <span>Manual</span>
-            </a>
-            <a href="guides/rules.ws" target="RulesSecurity">
-                <img class="menu-icon" src="client/navbar_rules.gif" height="16" alt="Rules & Security">
-                <span>Rules & Security</span>
-            </a>
-            <a href="members/members.ws" target="UpgradetoMembers">
-                <img class="menu-icon" src="client/navbar_members.gif" height="16" alt="Upgrade to Members">
-                <span>Upgrade to Members</span>
-            </a>
-        </div>
-
-        <!-- Game Canvas -->
+        <!-- GAME -->
         <div id="game">
             <canvas id="canvas" width="765" height="503">
                 Your browser is not capable of running our web client.
             </canvas>
         </div>
 
-        <!-- Controls -->
         <div class="centered" id="controls">
             <select id="size" name="size" onchange="setSize();">
                 <optgroup>
@@ -369,6 +369,7 @@
             <p class="green blink">Controls have been hidden press ctrl+alt+i to unhide.</p>
             <p class="green" id="count-down"></p>
         </div>
+
     </center>
 
     <script>
@@ -396,6 +397,6 @@
 
         loadSettings();
     </script>
-</body>
 
+</body>
 </html>
